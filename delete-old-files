@@ -33,7 +33,7 @@ find /mnt/depot/Downloads/WUD -mtime +$DL_AGE >> $DOF_PATH/list.txt
 find /mnt/depot/Downloads/YTM -mtime +$DL_AGE >> $DOF_PATH/list.txt
 
 # Find old Screenshots
-find /home/famellad/Pictures/Screenshots -mtime +$SS_AGE >> $DOF_PATH/list.txt
+find $HOME/Pictures/Screenshots -mtime +$SS_AGE >> $DOF_PATH/list.txt
 
 # Number of lines in the list
 FILE_COUNT=$(wc -l $DOF_PATH/list.txt | awk '{ print $1 }')
