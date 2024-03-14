@@ -1,0 +1,48 @@
+#!/bin/bash
+# Age of files in days
+DL_AGE=60       # Age of download files to delete, in days
+SS_AGE=7        # Age of screenshot files to delete, in days
+
+LIST_COMMAND=gedit # Command to view the list
+
+################################################################################
+# HERE BE DRAGONS!!!
+if ! command -v notify-send &> /dev/null
+then
+    echo "This script requires libnotify to be installed and notify-send to be in the PATH."
+    exit 1
+fi
+
+DOF_PATH=.local/state/dof
+
+cd
+mkdir -p $DOF_PATH
+
+# Reset the list
+rm $DOF_PATH/list.txt
+
+# Find old Downloads
+find /mnt/depot/Downloads/Music -mtime +$DL_AGE > $DOF_PATH/list.txt
+find /mnt/depot/Downloads/PopcornTime -mtime +$DL_AGE >> $DOF_PATH/list.txt
+find /mnt/depot/Downloads/Telegram\ Desktop -mtime +$DL_AGE >> $DOF_PATH/list.txt
+find /mnt/depot/Downloads/Torrent -mtime +$DL_AGE >> $DOF_PATH/list.txt
+find /mnt/depot/Downloads/VideoDownloader -mtime +$DL_AGE >> $DOF_PATH/list.txt
+find /mnt/depot/Downloads/Vortex -mtime +$DL_AGE >> $DOF_PATH/list.txt
+find /mnt/depot/Downloads/Web -mtime +$DL_AGE >> $DOF_PATH/list.txt
+find /mnt/depot/Downloads/WUD -mtime +$DL_AGE >> $DOF_PATH/list.txt
+find /mnt/depot/Downloads/YTM -mtime +$DL_AGE >> $DOF_PATH/list.txt
+
+# Find old Screenshots
+find /home/famellad/Pictures/Screenshots -mtime +$SS_AGE >> $DOF_PATH/list.txt
+
+# Number of lines in the list
+FILE_COUNT=$(wc -l $DOF_PATH/list.txt | awk '{ print $1 }')
+
+# Send a notification that won't expire
+if [ $FILE_COUNT > 0 ]; then
+    ACTION=$(notify-send --app-name="File Deletion Alert" --icon=data-warning --urgency=critical "$FILE_COUNT old files will be deleted upon next login!" --action "VIEW=View Full List")
+
+    if [ "$ACTION" = 'VIEW' ]; then
+        $LIST_COMMAND $DOF_PATH/list.txt
+    fi
+fi
