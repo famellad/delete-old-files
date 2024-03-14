@@ -18,6 +18,12 @@ DOF_PATH=.local/state/dof
 cd
 mkdir -p $DOF_PATH
 
+if [ -f "$DOF_PATH/list.txt" ]; then
+    while IFS= read -r file ; do
+        rm -- "$file"
+    done < $DOF_PATH/list.txt
+fi
+
 # Reset the list
 rm $DOF_PATH/list.txt
 
